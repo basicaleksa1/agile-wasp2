@@ -1,0 +1,27 @@
+package it.agilelab.bigdata.wasp.consumers.spark.streaming.actor
+
+import it.agilelab.bigdata.wasp.repository.core.bl.PipegraphInstanceBl
+import it.agilelab.bigdata.wasp.models.PipegraphInstanceModel
+
+import scala.collection.mutable.ListBuffer
+
+class MockPipegraphInstanceBl extends PipegraphInstanceBl {
+
+  val buffer: ListBuffer[PipegraphInstanceModel] = ListBuffer()
+
+  override def insert(instance: PipegraphInstanceModel): PipegraphInstanceModel = {
+    buffer += instance
+    instance
+  }
+
+  override def update(instance: PipegraphInstanceModel): PipegraphInstanceModel = {
+    buffer(buffer.toIndexedSeq.indexWhere(_.name == instance.name)) = instance
+    instance
+  }
+
+  override def all(): Seq[PipegraphInstanceModel] = buffer
+
+  override def instancesOf(name: String): Seq[PipegraphInstanceModel] = buffer.filter(_.instanceOf == name)
+
+  override def getByName(name: String): Option[PipegraphInstanceModel] = buffer.find(_.name == name)
+}

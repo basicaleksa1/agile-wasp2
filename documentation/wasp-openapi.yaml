@@ -1,0 +1,4405 @@
+openapi: 3.0.1
+info:
+  title: wasp-api
+  version: 2.31.0-550-parallel-write-plugin-improving-error-handling-when-sending-streamed-data-SNAPSHOT
+servers:
+- url: http://localhost:2891
+  description: default development server, beware of CORS
+tags:
+- name: batchjobs
+  description: operation related to batchjobs management
+- name: pipegraphs
+  description: operation related to pipegraphs management
+- name: producers
+  description: operation related to producers management
+- name: documents
+  description: operation related to documents management
+- name: topics
+  description: operation related to topics management
+- name: indices
+  description: operation related to indices management
+- name: mlmodels
+  description: operation related to machine learning models management
+- name: configuration
+  description: operation related to configurations management
+- name: logs
+  description: operation related to logs inspection
+- name: events
+  description: operation related to events inspection
+- name: telemetry
+  description: operation related to telemetry inspection
+- name: keyvalue
+  description: operation related to keyvalue models management
+- name: raw
+  description: operation related to raw models management
+- name: stats
+  description: Statistics about logs events and metrics
+- name: editor
+  description: operation related to stateless nifi, used as editor and pipegraphs
+    creation
+- name: freeCode
+  description: operation related to free code strategy management
+- name: generic
+  description: operation related to generic models management
+paths:
+  /pipegraphs/{pipegraphname}:
+    delete:
+      tags:
+      - pipegraphs
+      description: Deletes a pipegraph
+      operationId: delete-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pipegraphname
+        in: path
+        description: The name of the pipegraph to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /freeCode/instance/{modelname}:
+    get:
+      tags:
+      - freeCode
+      description: Retrieves the models used to create a free code strategy
+      operationId: get-freeCode
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: modelname
+        in: path
+        description: The name of the freeCode model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/FreeCodeModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /keyvalue:
+    get:
+      tags:
+      - keyvalue
+      description: Retrieves all models used to write or read from KeyValue Stores
+      operationId: list-keyvalue
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All key value models
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KeyValueModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /events:
+    get:
+      tags:
+      - events
+      description: Retrieves events entries
+      operationId: events
+      parameters:
+      - name: search
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: startTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: page
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: All event entries matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/Events'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /generic/{modelname}:
+    get:
+      tags:
+      - generic
+      description: Retrieves the model used to write or read from Generic Stores
+      operationId: get-generic
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: modelname
+        in: path
+        description: The name of the Generic model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/GenericModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /freeCode:
+    get:
+      tags:
+      - freeCode
+      description: Retrieves the models used to create a free code strategy
+      operationId: list-freeCode
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All free code strategy
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FreeCodeModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - freeCode
+      description: Inserts a freeCode model
+      operationId: insert-freeCode
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - name
+              - code
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+              xml:
+                name: FreeCodeModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorModel'
+                - type: string
+  /producers/{producername}:
+    delete:
+      tags:
+      - producers
+      description: Deletes a producer
+      operationId: delete-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: producername
+        in: path
+        description: The name of the producer to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /producers/{producername}/start:
+    post:
+      tags:
+      - producers
+      description: Start a producer
+      operationId: start-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: producername
+        in: path
+        description: The name of the producer to start
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the producer start operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /stats:
+    get:
+      tags:
+      - stats
+      description: Retrieve stats about logs, events and metrics
+      operationId: stats
+      parameters:
+      - name: startTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: size
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: stats matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/Counts'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /batchjobs/{batchjobname}/instances/{instance}:
+    get:
+      tags:
+      - batchjobs
+      description: Get a batch job instance
+      operationId: get-batch-job-instance
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: batchjobname
+        in: path
+        description: The name of the batch job to list instance for
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The name of the batch job instance to list
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The instance of the batch job
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/BatchJobInstanceModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /freeCode/complete/{position}:
+    post:
+      tags:
+      - freeCode
+      description: complete the code of a freeCode model
+      operationId: complete-freeCode
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: position
+        in: path
+        description: The position on the code to complete
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - code
+              type: object
+              properties:
+                code:
+                  type: string
+              xml:
+                name: FreeCode
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: complete the code of a freeCode model
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompletionModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /mlmodels/{mlmodelname}/{mlmodelversion}:
+    get:
+      tags:
+      - mlmodels
+      description: Retrieves data on a specific Machine Learning model
+      operationId: get-mlmodel
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: mlmodelname
+        in: path
+        description: The name of the ml model to retrieve
+        required: true
+        schema:
+          type: string
+      - name: mlmodelversion
+        in: path
+        description: The name of the mlmodel to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The instance of the MlModel
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/MlModelOnlyInfo'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    delete:
+      tags:
+      - mlmodels
+      description: Delete a Machine learning model
+      operationId: delete-mlmodel
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: mlmodelname
+        in: path
+        description: The name of the ml model to retrieve
+        required: true
+        schema:
+          type: string
+      - name: mlmodelversion
+        in: path
+        description: The name of the mlmodel to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The instance of the MlModel
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /topics/{topicname}:
+    get:
+      tags:
+      - topics
+      description: Retrieves the model used to write or read from message queues
+      operationId: get-topic
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: topicname
+        in: path
+        description: The name of the topic to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    oneOf:
+                    - $ref: '#/components/schemas/MultiTopicModel'
+                    - $ref: '#/components/schemas/TopicModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /pipegraphs/{pipegraphname}/stop:
+    post:
+      tags:
+      - pipegraphs
+      description: Stops the running instance of a pipegrah
+      operationId: stop-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pipegraphname
+        in: path
+        description: The name of the pipegraph to stop
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the pipegraph stop operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /indexes:
+    get:
+      tags:
+      - indices
+      description: Retrieve all models used to read or write indexed Data Stores
+      operationId: list-index
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All indices model
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndexModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /mlmodels:
+    get:
+      tags:
+      - mlmodels
+      description: Retrieve all machine learning models info
+      operationId: list-mlmodel
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All mlmodels
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MlModelOnlyInfo'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    put:
+      tags:
+      - mlmodels
+      description: Updates a machine learning model
+      operationId: update-mlmodel
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - version
+              - favorite
+              - description
+              type: object
+              properties:
+                name:
+                  type: string
+                version:
+                  type: string
+                className:
+                  type: string
+                  nullable: true
+                timestamp:
+                  type: integer
+                  format: int64
+                  nullable: true
+                modelFileId:
+                  type: string
+                  description: Should be a valid mongodb bsonobject formatted as hex
+                    string
+                  nullable: true
+                  example: 507f1f77bcf86cd799439011
+                favorite:
+                  type: boolean
+                description:
+                  type: string
+              xml:
+                name: MlModelOnlyInfo
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - mlmodels
+      description: Inserts a new MlModel
+      operationId: insert-mlmodel
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - version
+              - favorite
+              - description
+              type: object
+              properties:
+                name:
+                  type: string
+                version:
+                  type: string
+                className:
+                  type: string
+                  nullable: true
+                timestamp:
+                  type: integer
+                  format: int64
+                  nullable: true
+                modelFileId:
+                  type: string
+                  description: Should be a valid mongodb bsonobject formatted as hex
+                    string
+                  nullable: true
+                  example: 507f1f77bcf86cd799439011
+                favorite:
+                  type: boolean
+                description:
+                  type: string
+              xml:
+                name: MlModelOnlyInfo
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /pipegraphs/{pipegraphname}/instances:
+    get:
+      tags:
+      - pipegraphs
+      description: List all instances of a pipegraph
+      operationId: list-pipegraph-instance
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pipegraphname
+        in: path
+        description: The name of the pipegraph whose instances should be listed
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: All the instances for the requested pipegraph
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PipegraphInstanceModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /documents:
+    get:
+      tags:
+      - documents
+      description: Retrieves all models used to write or read from Document Stores
+      operationId: list-document
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All documents
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DocumentModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /logs:
+    get:
+      tags:
+      - logs
+      description: Retrieves logs entries
+      operationId: logs
+      parameters:
+      - name: search
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: startTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: page
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: All log entries matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/Logs'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /telemetry/metrics:
+    get:
+      tags:
+      - telemetry
+      description: List top telemetry metrics for source matching search
+      operationId: list-telemetry-metric
+      parameters:
+      - name: search
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: source
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Top sources matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/Metrics'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /topics:
+    get:
+      tags:
+      - topics
+      description: Lists all models used to write or read from message queues
+      operationId: list-topic
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All topics
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                      - $ref: '#/components/schemas/MultiTopicModel'
+                      - $ref: '#/components/schemas/TopicModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /pipegraphs:
+    get:
+      tags:
+      - pipegraphs
+      description: Lists all pipegraphs
+      operationId: list-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All pipegraphs
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PipegraphModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    put:
+      tags:
+      - pipegraphs
+      description: updateds a pipegraph
+      operationId: update-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - owner
+              - isSystem
+              - creationTime
+              - structuredStreamingComponents
+              - labels
+              - enrichmentSources
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                isSystem:
+                  type: boolean
+                creationTime:
+                  type: integer
+                  format: int64
+                structuredStreamingComponents:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StructuredStreamingETLModel'
+                dashboard:
+                  $ref: '#/components/schemas/DashboardModel'
+                labels:
+                  type: array
+                  items:
+                    type: string
+                enrichmentSources:
+                  $ref: '#/components/schemas/RestEnrichmentConfigModel'
+              xml:
+                name: PipegraphModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - pipegraphs
+      description: Inserts a pipegraph
+      operationId: insert-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - owner
+              - isSystem
+              - creationTime
+              - structuredStreamingComponents
+              - labels
+              - enrichmentSources
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                isSystem:
+                  type: boolean
+                creationTime:
+                  type: integer
+                  format: int64
+                structuredStreamingComponents:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StructuredStreamingETLModel'
+                dashboard:
+                  $ref: '#/components/schemas/DashboardModel'
+                labels:
+                  type: array
+                  items:
+                    type: string
+                enrichmentSources:
+                  $ref: '#/components/schemas/RestEnrichmentConfigModel'
+              xml:
+                name: PipegraphModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /config/sparkbatch:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration of the Spark Batch context
+      operationId: get-spark-batch-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: spark batch configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/SparkBatchConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /producers:
+    get:
+      tags:
+      - producers
+      description: Retrieves all producers
+      operationId: get-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All producers
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProducerModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    put:
+      tags:
+      - producers
+      description: Updates a new producer
+      operationId: update-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - className
+              - isActive
+              - isRemote
+              - isSystem
+              type: object
+              properties:
+                name:
+                  type: string
+                className:
+                  type: string
+                topicName:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                configuration:
+                  type: string
+                  nullable: true
+                isRemote:
+                  type: boolean
+                isSystem:
+                  type: boolean
+              xml:
+                name: ProducerModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - producers
+      description: Inserts a producer
+      operationId: insert-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - className
+              - isActive
+              - isRemote
+              - isSystem
+              type: object
+              properties:
+                name:
+                  type: string
+                className:
+                  type: string
+                topicName:
+                  type: string
+                  nullable: true
+                isActive:
+                  type: boolean
+                configuration:
+                  type: string
+                  nullable: true
+                isRemote:
+                  type: boolean
+                isSystem:
+                  type: boolean
+              xml:
+                name: ProducerModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /editor/nifi/{processGroupId}:
+    put:
+      tags:
+      - editor
+      description: Confirm that a process group edited on a editor instance it's ready
+        to be stored.
+      operationId: commit-processgroup
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: processGroupId
+        in: path
+        description: The process group id to commit
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Result of the commit and the processGroup data
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/ProcessGroupResponse'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /producers/{producername}/stop:
+    post:
+      tags:
+      - producers
+      description: Stop a producerj
+      operationId: stop-producer
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: producername
+        in: path
+        description: The name of the producer to stop
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the producer stop operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /editor/nifi/{processGroupName}:
+    post:
+      tags:
+      - editor
+      description: Create a new processGroup on a stateless nifi instance with name
+        processGroupName, returns a processgroupId and the instance url.
+      operationId: new-processgroup
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: processGroupName
+        in: path
+        description: The name of the new processGroup
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The new editor instance
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/NifiStatelessInstanceModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /batchjobs:
+    get:
+      tags:
+      - batchjobs
+      description: Lists all barch jobs
+      operationId: list-batch-job
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All batch jobs
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BatchJobModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    put:
+      tags:
+      - batchjobs
+      description: Inserts a new batch job
+      operationId: update-batch-job
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - owner
+              - system
+              - creationTime
+              - etl
+              - exclusivityConfig
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                system:
+                  type: boolean
+                creationTime:
+                  type: integer
+                  format: int64
+                etl:
+                  discriminator:
+                    propertyName: type
+                  oneOf:
+                  - $ref: '#/components/schemas/BatchETLModel'
+                  - $ref: '#/components/schemas/BatchGdprETLModel'
+                exclusivityConfig:
+                  $ref: '#/components/schemas/BatchJobExclusionConfig'
+              xml:
+                name: BatchJobModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - batchjobs
+      description: Inserts a new batch job
+      operationId: insert-batch-job
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - owner
+              - system
+              - creationTime
+              - etl
+              - exclusivityConfig
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                system:
+                  type: boolean
+                creationTime:
+                  type: integer
+                  format: int64
+                etl:
+                  discriminator:
+                    propertyName: type
+                  oneOf:
+                  - $ref: '#/components/schemas/BatchETLModel'
+                  - $ref: '#/components/schemas/BatchGdprETLModel'
+                exclusivityConfig:
+                  $ref: '#/components/schemas/BatchJobExclusionConfig'
+              xml:
+                name: BatchJobModel
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of insert
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /batchjobs/{batchjobname}:
+    delete:
+      tags:
+      - batchjobs
+      description: Deletes a Batch Job
+      operationId: delete-batch-job
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: batchjobname
+        in: path
+        description: The name of the batch job to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the batch job start operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /editor/pipegraph/{pipegraphName}:
+    get:
+      tags:
+      - editor
+      description: Gets specific Pipegraph created by FE editor
+      operationId: select-pipegraph
+      parameters:
+      - name: pipegraphName
+        in: path
+        description: The pipegraph name to search
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Pipegraph extraction result
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/PipegraphDTO'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /pipegraphs/{pipegraphname}/start:
+    post:
+      tags:
+      - pipegraphs
+      description: Starts a new instance of pipegraph
+      operationId: start-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pipegraphname
+        in: path
+        description: The name of the pipegraph to start
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the pipegraph start operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /batchjobs/{batchjobname}/start:
+    post:
+      tags:
+      - batchjobs
+      description: Starts a batch job
+      operationId: start-batch-job
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: batchjobname
+        in: path
+        description: The name of the batch job to start
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the batch job start operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/BatchJobStartResult'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /pipegraphs/{pipegraphname}/instances/{instance}:
+    get:
+      tags:
+      - pipegraphs
+      description: Retrieves a pipegraph instance
+      operationId: get-pipegraph-instance
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: pipegraphname
+        in: path
+        description: The name of the pipegraph to list instance for
+        required: true
+        schema:
+          type: string
+      - name: instance
+        in: path
+        description: The name of the pipegraph instance to list
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The instance of the pipegraph
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/PipegraphInstanceModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /generic:
+    get:
+      tags:
+      - generic
+      description: Retrieves all models used to write or read from Generic Stores
+      operationId: list-generic
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All Generic models
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GenericModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /config/telemetry:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration of the telemetry subsystem
+      operationId: get-telemetry-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: telemetry configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/TelemetryConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /telemetry/sources:
+    get:
+      tags:
+      - telemetry
+      description: List top telemetry sources matching search
+      operationId: list-telemetry-source
+      parameters:
+      - name: search
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: Top sources matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/Sources'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /indexes/{indexname}:
+    get:
+      tags:
+      - indices
+      description: Retrieves all models used to read or write Indexed data stores
+      operationId: get-index
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: indexname
+        in: path
+        description: The name of the index model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/IndexModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /telemetry/series:
+    get:
+      tags:
+      - telemetry
+      description: Retrieves series data pre aggregated by the server for display
+      operationId: get-telemetry-series
+      parameters:
+      - name: metric
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: source
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 'The number of buckets to aggregate data in, the start and end
+          timestamp will be divided in [size] number buckets '
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: startTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endTimestamp
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: aggregate
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/Aggregate'
+      responses:
+        "200":
+          description: Series data matching query
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/TelemetrySeries'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /batchjobs/{batchjobname}/instances:
+    get:
+      tags:
+      - batchjobs
+      description: Lists all instances of a batch job
+      operationId: list-batch-job-instance
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: batchjobname
+        in: path
+        description: The name of the batch job to start
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: All the instances for the requested batchjob
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BatchJobInstanceModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /freeCode/validate:
+    post:
+      tags:
+      - freeCode
+      description: Validates a freeCode model
+      operationId: validate-freeCode
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - code
+              type: object
+              properties:
+                code:
+                  type: string
+              xml:
+                name: FreeCode
+                namespace: java://it.agilelab.bigdata.wasp.models
+      responses:
+        "200":
+          description: Result of validate
+          content:
+            text/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ErrorModel'
+                - type: string
+  /config/kafka:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration used to connect to Kafka
+      operationId: get-kafka-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: kafka configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/KafkaConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /editor/pipegraph:
+    get:
+      tags:
+      - editor
+      description: Gets all Pipegraphs created by FE editor
+      operationId: get-pipegraph
+      responses:
+        "200":
+          description: Pipegraph extraction result
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PipegraphDTO'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    put:
+      tags:
+      - editor
+      description: Validates and updates an existing Pipegraph generated by FE Editor
+      operationId: put-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - structuredStreamingComponents
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                  nullable: true
+                structuredStreamingComponents:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StructuredStreamingETLDTO'
+              xml:
+                name: PipegraphDTO
+                namespace: java://it.agilelab.bigdata.wasp.models.editor
+      responses:
+        "200":
+          description: Successful Pipegraph update result
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    post:
+      tags:
+      - editor
+      description: Validates and inserts a Pipegraph generated by FE Editor
+      operationId: post-pipegraph
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          text/json:
+            schema:
+              required:
+              - name
+              - description
+              - structuredStreamingComponents
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                owner:
+                  type: string
+                  nullable: true
+                structuredStreamingComponents:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StructuredStreamingETLDTO'
+              xml:
+                name: PipegraphDTO
+                namespace: java://it.agilelab.bigdata.wasp.models.editor
+      responses:
+        "200":
+          description: Successful Pipegraph generation result
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /documents/{documentname}:
+    get:
+      tags:
+      - documents
+      description: Retrieves the model used to write or read from Document Stores
+      operationId: get-document
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: documentname
+        in: path
+        description: The name of the document model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/DocumentModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /config/sparkstreaming:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration of the Spark Streaming context
+      operationId: get-spark-streaming-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: spark streaming configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/SparkStreamingConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /keyvalue/{modelname}:
+    get:
+      tags:
+      - keyvalue
+      description: Retrieves the model used to write or read from KeyValue Stores
+      operationId: get-keyvalue
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: modelname
+        in: path
+        description: The name of the KeyValue model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/KeyValueModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /strategy:
+    get:
+      tags:
+      - strategy
+      description: Retrieves the possible strategies
+      operationId: list-strategies
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All strategies
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      type: string
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /raw/{modelname}:
+    get:
+      tags:
+      - raw
+      description: Retrieves the model used to write or read from Raw Stores
+      operationId: get-raw
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: modelname
+        in: path
+        description: The name of the Raw model to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Outcome of the operation
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/RawModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /config/sorl:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration used to connect to solr
+      operationId: get-solr-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: solr configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/SolrConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /raw:
+    get:
+      tags:
+      - raw
+      description: Retrieves all models used to write or read from Raw Stores
+      operationId: list-raw
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: All key value models
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RawModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+  /config/es:
+    get:
+      tags:
+      - configuration
+      description: Retrieves the configuration used to connect to elastic
+      operationId: get-elastic-config
+      parameters:
+      - name: pretty
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: elastic configuration
+          content:
+            text/json:
+              schema:
+                required:
+                - Result
+                - data
+                type: object
+                properties:
+                  Result:
+                    $ref: '#/components/schemas/ResultIndicator'
+                  data:
+                    $ref: '#/components/schemas/ElasticConfigModel'
+                xml:
+                  name: AngularResponse
+                  namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+components:
+  schemas:
+    RawOptions:
+      required:
+      - saveMode
+      - format
+      type: object
+      properties:
+        saveMode:
+          type: string
+        format:
+          type: string
+        extraOptions:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+        partitionBy:
+          type: array
+          nullable: true
+          items:
+            type: string
+      xml:
+        name: RawOptions
+        namespace: java://it.agilelab.bigdata.wasp.models
+    CountEntry:
+      required:
+      - timestamp
+      - count
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        count:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int32
+      xml:
+        name: CountEntry
+        namespace: java://it.agilelab.bigdata.wasp.models
+    Sources:
+      required:
+      - found
+      - entries
+      type: object
+      properties:
+        found:
+          type: integer
+          format: int64
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceEntry'
+      xml:
+        name: Sources
+        namespace: java://it.agilelab.bigdata.wasp.models
+    RawModelDTO:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        config:
+          $ref: '#/components/schemas/RawModel'
+      xml:
+        name: RawModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    GenericOptions:
+      type: object
+      properties:
+        options:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+      xml:
+        name: GenericOptions
+        namespace: java://it.agilelab.bigdata.wasp.models
+    CompletionModel:
+      required:
+      - toComplete
+      - info
+      type: object
+      properties:
+        toComplete:
+          type: string
+        info:
+          type: string
+      xml:
+        name: CompletionModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    BatchJobModel:
+      required:
+      - name
+      - description
+      - owner
+      - system
+      - creationTime
+      - etl
+      - exclusivityConfig
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        owner:
+          type: string
+        system:
+          type: boolean
+        creationTime:
+          type: integer
+          format: int64
+        etl:
+          discriminator:
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/BatchETLModel'
+          - $ref: '#/components/schemas/BatchGdprETLModel'
+        exclusivityConfig:
+          $ref: '#/components/schemas/BatchJobExclusionConfig'
+      xml:
+        name: BatchJobModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    WriterModelDTO:
+      required:
+      - name
+      - datastoreModel
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        datastoreModel:
+          discriminator:
+            propertyName: modelType
+          oneOf:
+          - $ref: '#/components/schemas/TopicModelDTO'
+          - $ref: '#/components/schemas/IndexModelDTO'
+          - $ref: '#/components/schemas/KeyValueModelDTO'
+          - $ref: '#/components/schemas/RawModelDTO'
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: WriterModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    FreeCodeModel:
+      required:
+      - name
+      - code
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+      xml:
+        name: FreeCodeModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    KeyValueModel:
+      required:
+      - name
+      - tableCatalog
+      - useAvroSchemaManager
+      type: object
+      properties:
+        name:
+          type: string
+        tableCatalog:
+          type: string
+        dataFrameSchema:
+          type: string
+          nullable: true
+        options:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/KeyValueOption'
+        useAvroSchemaManager:
+          type: boolean
+        avroSchemas:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+      xml:
+        name: KeyValueModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    RawDataStoreConf:
+      required:
+      - inputKeyColumn
+      - correlationIdColumn
+      - rawModel
+      - rawMatchingStrategy
+      - partitionPruningStrategy
+      - missingPathFailure
+      type: object
+      properties:
+        inputKeyColumn:
+          type: string
+        correlationIdColumn:
+          type: string
+        rawModel:
+          $ref: '#/components/schemas/RawModel'
+        rawMatchingStrategy:
+          discriminator:
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/ExactRawMatchingStrategy'
+          - $ref: '#/components/schemas/PrefixRawMatchingStrategy'
+          - $ref: '#/components/schemas/ContainsRawMatchingStrategy'
+        partitionPruningStrategy:
+          discriminator:
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/ExactKeyValueMatchingStrategy'
+          - $ref: '#/components/schemas/TimeBasedBetweenPartitionPruningStrategy'
+        missingPathFailure:
+          type: boolean
+      xml:
+        name: RawDataStoreConf
+        namespace: java://it.agilelab.bigdata.wasp.models
+    DashboardModel:
+      required:
+      - url
+      - needsFilterBox
+      type: object
+      properties:
+        url:
+          type: string
+        needsFilterBox:
+          type: boolean
+      nullable: true
+      xml:
+        name: DashboardModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    NifiStatelessInstanceModel:
+      required:
+      - name
+      - url
+      - processGroupId
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        processGroupId:
+          type: string
+      xml:
+        name: NifiStatelessInstanceModel
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    StrategyClassDTO:
+      required:
+      - className
+      type: object
+      properties:
+        className:
+          type: string
+        config:
+          type: string
+          nullable: true
+      xml:
+        name: StrategyClassDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    MultiTopicModel:
+      required:
+      - name
+      - topicNameField
+      - topicModelNames
+      type: object
+      properties:
+        name:
+          type: string
+        topicNameField:
+          type: string
+        topicModelNames:
+          type: array
+          items:
+            type: string
+      xml:
+        name: MultiTopicModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    EventEntry:
+      required:
+      - eventType
+      - eventId
+      - severity
+      - payload
+      - timestamp
+      - source
+      - sourceId
+      - eventRuleName
+      type: object
+      properties:
+        eventType:
+          type: string
+        eventId:
+          type: string
+        severity:
+          type: string
+        payload:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        source:
+          type: string
+        sourceId:
+          type: string
+        eventRuleName:
+          type: string
+      xml:
+        name: EventEntry
+        namespace: java://it.agilelab.bigdata.wasp.models
+    BatchJobInstanceModel:
+      required:
+      - name
+      - instanceOf
+      - startTimestamp
+      - currentStatusTimestamp
+      - status
+      - restConfig
+      type: object
+      properties:
+        name:
+          type: string
+        instanceOf:
+          type: string
+        startTimestamp:
+          type: integer
+          format: int64
+        currentStatusTimestamp:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        restConfig:
+          type: object
+        error:
+          type: string
+          nullable: true
+      xml:
+        name: BatchJobInstanceModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    KafkaEntryConfig:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      xml:
+        name: KafkaEntryConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    GenericModel:
+      required:
+      - name
+      - value
+      - product
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          $ref: '#/components/schemas/BsonDocument'
+        product:
+          $ref: '#/components/schemas/GenericProduct'
+        options:
+          $ref: '#/components/schemas/GenericOptions'
+      xml:
+        name: GenericModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    SubjectStrategyEnum:
+      type: string
+      enum:
+      - none
+      - topic
+      - record
+      - topic-and-record
+    DocumentModel:
+      required:
+      - name
+      - connectionString
+      - schema
+      type: object
+      properties:
+        name:
+          type: string
+        connectionString:
+          type: string
+        schema:
+          type: string
+      xml:
+        name: DocumentModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    Metrics:
+      required:
+      - found
+      - entries
+      type: object
+      properties:
+        found:
+          type: integer
+          format: int64
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricEntry'
+      xml:
+        name: Metrics
+        namespace: java://it.agilelab.bigdata.wasp.models
+    IndexModelDTO:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+      xml:
+        name: IndexModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    RawModel:
+      required:
+      - name
+      - uri
+      - timed
+      - schema
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        uri:
+          type: string
+        timed:
+          type: boolean
+        schema:
+          type: string
+        options:
+          $ref: '#/components/schemas/RawOptions'
+      nullable: true
+      xml:
+        name: RawModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    JMXTelemetryConfigModel:
+      required:
+      - query
+      - metricGroupAttribute
+      - sourceIdAttribute
+      - metricGroupFallback
+      - sourceIdFallback
+      type: object
+      properties:
+        query:
+          type: string
+        metricGroupAttribute:
+          type: string
+        sourceIdAttribute:
+          type: string
+        metricGroupFallback:
+          type: string
+        sourceIdFallback:
+          type: string
+      xml:
+        name: JMXTelemetryConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    SparkDriverConfig:
+      required:
+      - submitDeployMode
+      - cores
+      - memory
+      - host
+      - bindAddress
+      - port
+      - killDriverProcessIfSparkContextStops
+      type: object
+      properties:
+        submitDeployMode:
+          type: string
+        cores:
+          type: integer
+          format: int32
+        memory:
+          type: string
+        host:
+          type: string
+        bindAddress:
+          type: string
+        port:
+          type: integer
+          format: int32
+        killDriverProcessIfSparkContextStops:
+          type: boolean
+      xml:
+        name: SparkDriverConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    PipegraphInstanceModel:
+      required:
+      - name
+      - instanceOf
+      - startTimestamp
+      - currentStatusTimestamp
+      - status
+      type: object
+      properties:
+        name:
+          type: string
+        instanceOf:
+          type: string
+        startTimestamp:
+          type: integer
+          format: int64
+        currentStatusTimestamp:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/PipegraphStatus'
+        executedByNode:
+          type: string
+          nullable: true
+        peerActor:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+      xml:
+        name: PipegraphInstanceModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    ContainsRawMatchingStrategy:
+      required:
+      - dataframeKeyMatchingExpression
+      type: object
+      properties:
+        dataframeKeyMatchingExpression:
+          type: string
+      xml:
+        name: ContainsRawMatchingStrategy
+        namespace: java://it.agilelab.bigdata.wasp.models
+    ReaderModelDTO:
+      required:
+      - name
+      - datastoreModel
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        datastoreModel:
+          discriminator:
+            propertyName: modelType
+          oneOf:
+          - $ref: '#/components/schemas/TopicModelDTO'
+          - $ref: '#/components/schemas/IndexModelDTO'
+          - $ref: '#/components/schemas/KeyValueModelDTO'
+          - $ref: '#/components/schemas/RawModelDTO'
+        options:
+          type: object
+          additionalProperties:
+            type: string
+        rateLimit:
+          type: integer
+          format: int32
+          nullable: true
+      xml:
+        name: ReaderModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    SparkEntryConfig:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      xml:
+        name: SparkEntryConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    StrategyModel:
+      required:
+      - className
+      type: object
+      properties:
+        className:
+          type: string
+        configuration:
+          type: string
+          nullable: true
+      nullable: true
+      xml:
+        name: StrategyModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    PipegraphDTO:
+      required:
+      - name
+      - description
+      - structuredStreamingComponents
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        owner:
+          type: string
+          nullable: true
+        structuredStreamingComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/StructuredStreamingETLDTO'
+      xml:
+        name: PipegraphDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    ResultIndicator:
+      type: string
+      enum:
+      - OK
+      - KO
+    BatchGdprETLModel:
+      required:
+      - name
+      - dataStores
+      - strategyConfig
+      - inputs
+      - output
+      - group
+      - isActive
+      type: object
+      properties:
+        name:
+          type: string
+        dataStores:
+          type: array
+          items:
+            discriminator:
+              propertyName: type
+            oneOf:
+            - $ref: '#/components/schemas/RawDataStoreConf'
+            - $ref: '#/components/schemas/KeyValueDataStoreConf'
+        strategyConfig:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReaderModel'
+        output:
+          $ref: '#/components/schemas/WriterModel'
+        group:
+          type: string
+        isActive:
+          type: boolean
+        type:
+          type: string
+      xml:
+        name: BatchGdprETLModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    TopicCompressionEnum:
+      type: string
+      enum:
+      - disabled
+      - gzip
+      - snappy
+      - lz4
+    Counts:
+      required:
+      - logs
+      - telemetry
+      - events
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountEntry'
+        telemetry:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountEntry'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountEntry'
+      xml:
+        name: Counts
+        namespace: java://it.agilelab.bigdata.wasp.models
+    NifiStatelessConfigModel:
+      required:
+      - bootstrapJars
+      - systemJars
+      - statelessJars
+      - extensions
+      type: object
+      properties:
+        bootstrapJars:
+          type: string
+        systemJars:
+          type: string
+        statelessJars:
+          type: string
+        extensions:
+          type: string
+      nullable: true
+      xml:
+        name: NifiStatelessConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    MlModelOnlyInfo:
+      required:
+      - name
+      - version
+      - favorite
+      - description
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        className:
+          type: string
+          nullable: true
+        timestamp:
+          type: integer
+          format: int64
+          nullable: true
+        modelFileId:
+          type: string
+          description: Should be a valid mongodb bsonobject formatted as hex string
+          nullable: true
+          example: 507f1f77bcf86cd799439011
+        favorite:
+          type: boolean
+        description:
+          type: string
+      xml:
+        name: MlModelOnlyInfo
+        namespace: java://it.agilelab.bigdata.wasp.models
+    SparkBatchConfigModel:
+      required:
+      - appName
+      - master
+      - driver
+      - executorCores
+      - executorMemory
+      - coresMax
+      - executorInstances
+      - additionalJarsPath
+      - yarnJar
+      - blockManagerPort
+      - retained
+      - kryoSerializer
+      - others
+      - name
+      type: object
+      properties:
+        appName:
+          type: string
+        master:
+          $ref: '#/components/schemas/ConnectionConfig'
+        driver:
+          $ref: '#/components/schemas/SparkDriverConfig'
+        executorCores:
+          type: integer
+          format: int32
+        executorMemory:
+          type: string
+        coresMax:
+          type: integer
+          format: int32
+        executorInstances:
+          type: integer
+          format: int32
+        additionalJarsPath:
+          type: string
+        yarnJar:
+          type: string
+        blockManagerPort:
+          type: integer
+          format: int32
+        retained:
+          $ref: '#/components/schemas/RetainedConfigModel'
+        kryoSerializer:
+          $ref: '#/components/schemas/KryoSerializerConfig'
+        others:
+          type: array
+          items:
+            $ref: '#/components/schemas/SparkEntryConfig'
+        name:
+          type: string
+      xml:
+        name: SparkBatchConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    Logs:
+      required:
+      - found
+      - entries
+      type: object
+      properties:
+        found:
+          type: integer
+          format: int64
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+      xml:
+        name: Logs
+        namespace: java://it.agilelab.bigdata.wasp.models
+    JobStatus:
+      type: string
+      enum:
+      - PENDING
+      - PROCESSING
+      - SUCCESSFUL
+      - FAILED
+      - STOPPED
+    KryoSerializerConfig:
+      required:
+      - enabled
+      - registrators
+      - strict
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        registrators:
+          type: string
+        strict:
+          type: boolean
+      xml:
+        name: KryoSerializerConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    StructuredStreamingETLDTO:
+      required:
+      - name
+      - group
+      - streamingInput
+      - streamingOutput
+      - strategy
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        group:
+          type: string
+        streamingInput:
+          $ref: '#/components/schemas/ReaderModelDTO'
+        streamingOutput:
+          $ref: '#/components/schemas/WriterModelDTO'
+        strategy:
+          discriminator:
+            propertyName: strategyType
+          oneOf:
+          - $ref: '#/components/schemas/FreeCodeDTO'
+          - $ref: '#/components/schemas/FlowNifiDTO'
+          - $ref: '#/components/schemas/StrategyClassDTO'
+        triggerIntervalMs:
+          type: integer
+          format: int64
+          nullable: true
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: StructuredStreamingETLDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    WriterModel:
+      required:
+      - name
+      - datastoreModelName
+      - datastoreProduct
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        datastoreModelName:
+          type: string
+        datastoreProduct:
+          type: string
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: WriterModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    PipegraphModel:
+      required:
+      - name
+      - description
+      - owner
+      - isSystem
+      - creationTime
+      - structuredStreamingComponents
+      - labels
+      - enrichmentSources
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        owner:
+          type: string
+        isSystem:
+          type: boolean
+        creationTime:
+          type: integer
+          format: int64
+        structuredStreamingComponents:
+          type: array
+          items:
+            $ref: '#/components/schemas/StructuredStreamingETLModel'
+        dashboard:
+          $ref: '#/components/schemas/DashboardModel'
+        labels:
+          type: array
+          items:
+            type: string
+        enrichmentSources:
+          $ref: '#/components/schemas/RestEnrichmentConfigModel'
+      xml:
+        name: PipegraphModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    TimeBasedBetweenPartitionPruningStrategy:
+      required:
+      - columnName
+      - isDateNumeric
+      - pattern
+      - granularity
+      type: object
+      properties:
+        columnName:
+          type: string
+        isDateNumeric:
+          type: boolean
+        pattern:
+          type: string
+        granularity:
+          type: string
+      xml:
+        name: TimeBasedBetweenPartitionPruningStrategy
+        namespace: java://it.agilelab.bigdata.wasp.models
+    ConnectionConfig:
+      required:
+      - protocol
+      - host
+      - port
+      type: object
+      properties:
+        protocol:
+          type: string
+        host:
+          type: string
+        port:
+          type: integer
+          format: int32
+        timeout:
+          type: integer
+          format: int64
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+      xml:
+        name: ConnectionConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    SparkStreamingConfigModel:
+      required:
+      - appName
+      - master
+      - driver
+      - executorCores
+      - executorMemory
+      - coresMax
+      - executorInstances
+      - additionalJarsPath
+      - yarnJar
+      - blockManagerPort
+      - retained
+      - kryoSerializer
+      - streamingBatchIntervalMs
+      - checkpointDir
+      - enableHiveSupport
+      - others
+      - schedulingStrategy
+      - name
+      type: object
+      properties:
+        appName:
+          type: string
+        master:
+          $ref: '#/components/schemas/ConnectionConfig'
+        driver:
+          $ref: '#/components/schemas/SparkDriverConfig'
+        executorCores:
+          type: integer
+          format: int32
+        executorMemory:
+          type: string
+        coresMax:
+          type: integer
+          format: int32
+        executorInstances:
+          type: integer
+          format: int32
+        additionalJarsPath:
+          type: string
+        yarnJar:
+          type: string
+        blockManagerPort:
+          type: integer
+          format: int32
+        retained:
+          $ref: '#/components/schemas/RetainedConfigModel'
+        kryoSerializer:
+          $ref: '#/components/schemas/KryoSerializerConfig'
+        streamingBatchIntervalMs:
+          type: integer
+          format: int32
+        checkpointDir:
+          type: string
+        enableHiveSupport:
+          type: boolean
+        triggerIntervalMs:
+          type: integer
+          format: int64
+          nullable: true
+        others:
+          type: array
+          items:
+            $ref: '#/components/schemas/SparkEntryConfig'
+        nifiStateless:
+          $ref: '#/components/schemas/NifiStatelessConfigModel'
+        schedulingStrategy:
+          $ref: '#/components/schemas/SchedulingStrategyConfigModel'
+        name:
+          type: string
+      xml:
+        name: SparkStreamingConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    KeyValueDataStoreConf:
+      required:
+      - inputKeyColumn
+      - correlationIdColumn
+      - keyValueModel
+      - keyValueMatchingStrategy
+      type: object
+      properties:
+        inputKeyColumn:
+          type: string
+        correlationIdColumn:
+          type: string
+        keyValueModel:
+          $ref: '#/components/schemas/KeyValueModel'
+        keyValueMatchingStrategy:
+          discriminator:
+            propertyName: type
+          oneOf:
+          - $ref: '#/components/schemas/ExactKeyValueMatchingStrategy'
+          - $ref: '#/components/schemas/PrefixAndTimeBoundKeyValueMatchingStrategy'
+          - $ref: '#/components/schemas/PrefixKeyValueMatchingStrategy'
+      xml:
+        name: KeyValueDataStoreConf
+        namespace: java://it.agilelab.bigdata.wasp.models
+    StructuredStreamingETLModel:
+      required:
+      - name
+      - group
+      - streamingInput
+      - staticInputs
+      - streamingOutput
+      - mlModels
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        group:
+          type: string
+        streamingInput:
+          $ref: '#/components/schemas/StreamingReaderModel'
+        staticInputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReaderModel'
+        streamingOutput:
+          $ref: '#/components/schemas/WriterModel'
+        mlModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MlModelOnlyInfo'
+        strategy:
+          $ref: '#/components/schemas/StrategyModel'
+        triggerIntervalMs:
+          type: integer
+          format: int64
+          nullable: true
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: StructuredStreamingETLModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    SchedulingStrategyConfigModel:
+      required:
+      - factoryClass
+      - factoryParams
+      type: object
+      properties:
+        factoryClass:
+          type: string
+        factoryParams:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: SchedulingStrategyConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    PrefixKeyValueMatchingStrategy:
+      type: object
+    LogEntry:
+      required:
+      - log_source
+      - log_level
+      - message
+      - timestamp
+      - thread
+      type: object
+      properties:
+        log_source:
+          type: string
+        log_level:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        thread:
+          type: string
+        cause:
+          type: string
+          nullable: true
+        stacktrace:
+          type: string
+          nullable: true
+      xml:
+        name: LogEntry
+        namespace: java://it.agilelab.bigdata.wasp.models
+    RestEnrichmentConfigModel:
+      required:
+      - sources
+      type: object
+      properties:
+        sources:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RestEnrichmentSource'
+      xml:
+        name: RestEnrichmentConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    BatchJobStartResult:
+      required:
+      - startResult
+      - instance
+      type: object
+      properties:
+        startResult:
+          type: string
+        instance:
+          type: string
+      xml:
+        name: BatchJobStartResult
+        namespace: java://it.agilelab.bigdata.wasp.master.web.openapi
+    SourceEntry:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+      xml:
+        name: SourceEntry
+        namespace: java://it.agilelab.bigdata.wasp.models
+    ProcessGroupResponse:
+      required:
+      - id
+      - content
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          $ref: '#/components/schemas/JObject'
+      xml:
+        name: ProcessGroupResponse
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    BsonDocument:
+      type: object
+    ElasticConfigModel:
+      required:
+      - connections
+      - name
+      type: object
+      properties:
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionConfig'
+        name:
+          type: string
+      xml:
+        name: ElasticConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    ErrorModel:
+      required:
+      - fileName
+      - where
+      - errorType
+      - msg
+      - content
+      - indicator
+      type: object
+      properties:
+        fileName:
+          type: string
+        where:
+          type: string
+        errorType:
+          type: string
+        msg:
+          type: string
+        content:
+          type: string
+        indicator:
+          type: string
+      xml:
+        name: ErrorModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    PrefixAndTimeBoundKeyValueMatchingStrategy:
+      required:
+      - separator
+      - pattern
+      - locale
+      type: object
+      properties:
+        separator:
+          type: string
+        pattern:
+          type: string
+        locale:
+          type: string
+      xml:
+        name: PrefixAndTimeBoundKeyValueMatchingStrategy
+        namespace: java://it.agilelab.bigdata.wasp.models
+    JObject:
+      type: object
+      xml:
+        name: JObject
+        namespace: java://org.json4s
+    ReaderModel:
+      required:
+      - name
+      - datastoreModelName
+      - datastoreProduct
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        datastoreModelName:
+          type: string
+        datastoreProduct:
+          type: string
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: ReaderModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    PrefixRawMatchingStrategy:
+      required:
+      - dataframeKeyMatchingExpression
+      type: object
+      properties:
+        dataframeKeyMatchingExpression:
+          type: string
+      xml:
+        name: PrefixRawMatchingStrategy
+        namespace: java://it.agilelab.bigdata.wasp.models
+    MetricEntry:
+      required:
+      - source
+      - name
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/SourceEntry'
+        name:
+          type: string
+      xml:
+        name: MetricEntry
+        namespace: java://it.agilelab.bigdata.wasp.models
+    IndexModel:
+      required:
+      - name
+      - creationTime
+      - rollingIndex
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        creationTime:
+          type: integer
+          format: int64
+        schema:
+          type: string
+          nullable: true
+        query:
+          type: string
+          nullable: true
+        numShards:
+          type: integer
+          format: int32
+          nullable: true
+        replicationFactor:
+          type: integer
+          format: int32
+          nullable: true
+        rollingIndex:
+          type: boolean
+        idField:
+          type: string
+          nullable: true
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: IndexModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    KafkaConfigModel:
+      required:
+      - connections
+      - ingest_rate
+      - zookeeperConnections
+      - broker_id
+      - partitioner_fqcn
+      - default_encoder
+      - key_encoder_fqcn
+      - encoder_fqcn
+      - decoder_fqcn
+      - batch_send_size
+      - acks
+      - others
+      - name
+      type: object
+      properties:
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionConfig'
+        ingest_rate:
+          type: string
+        zookeeperConnections:
+          $ref: '#/components/schemas/ZookeeperConnectionsConfig'
+        broker_id:
+          type: string
+        partitioner_fqcn:
+          type: string
+        default_encoder:
+          type: string
+        key_encoder_fqcn:
+          type: string
+        encoder_fqcn:
+          type: string
+        decoder_fqcn:
+          type: string
+        batch_send_size:
+          type: integer
+          format: int32
+        acks:
+          type: string
+        others:
+          type: array
+          items:
+            $ref: '#/components/schemas/KafkaEntryConfig'
+        name:
+          type: string
+      xml:
+        name: KafkaConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    RetainedConfigModel:
+      required:
+      - retainedStagesJobs
+      - retainedTasks
+      - retainedJobs
+      - retainedExecutions
+      - retainedBatches
+      type: object
+      properties:
+        retainedStagesJobs:
+          type: integer
+          format: int32
+        retainedTasks:
+          type: integer
+          format: int32
+        retainedJobs:
+          type: integer
+          format: int32
+        retainedExecutions:
+          type: integer
+          format: int32
+        retainedBatches:
+          type: integer
+          format: int32
+      xml:
+        name: RetainedConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    FreeCodeDTO:
+      required:
+      - code
+      - name
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        config:
+          type: string
+          nullable: true
+      xml:
+        name: FreeCodeDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    TopicModel:
+      required:
+      - name
+      - creationTime
+      - partitions
+      - replicas
+      - topicDataType
+      - useAvroSchemaManager
+      - schema
+      - topicCompression
+      - subjectStrategy
+      type: object
+      properties:
+        name:
+          type: string
+        creationTime:
+          type: integer
+          format: int64
+        partitions:
+          type: integer
+          format: int32
+        replicas:
+          type: integer
+          format: int32
+        topicDataType:
+          type: string
+        keyFieldName:
+          type: string
+          nullable: true
+        headersFieldName:
+          type: string
+          nullable: true
+        valueFieldsNames:
+          type: array
+          nullable: true
+          items:
+            type: string
+        useAvroSchemaManager:
+          type: boolean
+        schema:
+          $ref: '#/components/schemas/BsonDocument'
+        topicCompression:
+          $ref: '#/components/schemas/TopicCompressionEnum'
+        subjectStrategy:
+          $ref: '#/components/schemas/SubjectStrategyEnum'
+        keySchema:
+          type: string
+          nullable: true
+      xml:
+        name: TopicModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    BatchETLModel:
+      required:
+      - name
+      - inputs
+      - output
+      - mlModels
+      - kafkaAccessType
+      - group
+      - isActive
+      type: object
+      properties:
+        name:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReaderModel'
+        output:
+          $ref: '#/components/schemas/WriterModel'
+        mlModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/MlModelOnlyInfo'
+        strategy:
+          $ref: '#/components/schemas/StrategyModel'
+        kafkaAccessType:
+          type: string
+        group:
+          type: string
+        isActive:
+          type: boolean
+        type:
+          type: string
+      xml:
+        name: BatchETLModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    BatchJobExclusionConfig:
+      required:
+      - isFullyExclusive
+      - restConfigExclusiveParams
+      type: object
+      properties:
+        isFullyExclusive:
+          type: boolean
+        restConfigExclusiveParams:
+          type: array
+          items:
+            type: string
+      xml:
+        name: BatchJobExclusionConfig
+        namespace: java://it.agilelab.bigdata.wasp.models
+    SolrConfigModel:
+      required:
+      - zookeeperConnections
+      - name
+      type: object
+      properties:
+        zookeeperConnections:
+          $ref: '#/components/schemas/ZookeeperConnectionsConfig'
+        name:
+          type: string
+      xml:
+        name: SolrConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    Events:
+      required:
+      - found
+      - entries
+      type: object
+      properties:
+        found:
+          type: integer
+          format: int64
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventEntry'
+      xml:
+        name: Events
+        namespace: java://it.agilelab.bigdata.wasp.models
+    TelemetryPoint:
+      required:
+      - timestamp
+      - value
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        value:
+          type: number
+          format: double
+      xml:
+        name: TelemetryPoint
+        namespace: java://it.agilelab.bigdata.wasp.models
+    ProducerModel:
+      required:
+      - name
+      - className
+      - isActive
+      - isRemote
+      - isSystem
+      type: object
+      properties:
+        name:
+          type: string
+        className:
+          type: string
+        topicName:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        configuration:
+          type: string
+          nullable: true
+        isRemote:
+          type: boolean
+        isSystem:
+          type: boolean
+      xml:
+        name: ProducerModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    Aggregate:
+      type: string
+      enum:
+      - max
+      - min
+      - avg
+      - sum
+    TopicModelDTO:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+      xml:
+        name: TopicModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    ExactKeyValueMatchingStrategy:
+      type: object
+    StreamingReaderModel:
+      required:
+      - name
+      - datastoreModelName
+      - datastoreProduct
+      - options
+      type: object
+      properties:
+        name:
+          type: string
+        datastoreModelName:
+          type: string
+        datastoreProduct:
+          type: string
+        rateLimit:
+          type: integer
+          format: int32
+          nullable: true
+        options:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: StreamingReaderModel
+        namespace: java://it.agilelab.bigdata.wasp.models
+    TelemetrySeries:
+      required:
+      - source
+      - metric
+      - series
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/SourceEntry'
+        metric:
+          $ref: '#/components/schemas/MetricEntry'
+        series:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelemetryPoint'
+      xml:
+        name: TelemetrySeries
+        namespace: java://it.agilelab.bigdata.wasp.models
+    RestEnrichmentSource:
+      required:
+      - kind
+      - parameters
+      - headers
+      type: object
+      properties:
+        kind:
+          type: string
+        parameters:
+          type: object
+          additionalProperties:
+            type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+      xml:
+        name: RestEnrichmentSource
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    KeyValueModelDTO:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+      xml:
+        name: KeyValueModelDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    TelemetryTopicConfigModel:
+      required:
+      - topicName
+      - partitions
+      - replica
+      - kafkaSettings
+      - jmx
+      type: object
+      properties:
+        topicName:
+          type: string
+        partitions:
+          type: integer
+          format: int32
+        replica:
+          type: integer
+          format: int32
+        kafkaSettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/KafkaEntryConfig'
+        jmx:
+          type: array
+          items:
+            $ref: '#/components/schemas/JMXTelemetryConfigModel'
+      xml:
+        name: TelemetryTopicConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    ZookeeperConnectionsConfig:
+      required:
+      - connections
+      - chRoot
+      type: object
+      properties:
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionConfig'
+        chRoot:
+          type: string
+      xml:
+        name: ZookeeperConnectionsConfig
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    TelemetryConfigModel:
+      required:
+      - name
+      - writer
+      - sampleOneMessageEvery
+      - telemetryTopicConfigModel
+      type: object
+      properties:
+        name:
+          type: string
+        writer:
+          type: string
+        sampleOneMessageEvery:
+          type: integer
+          format: int32
+        telemetryTopicConfigModel:
+          $ref: '#/components/schemas/TelemetryTopicConfigModel'
+      xml:
+        name: TelemetryConfigModel
+        namespace: java://it.agilelab.bigdata.wasp.models.configuration
+    FlowNifiDTO:
+      required:
+      - processGroup
+      - name
+      type: object
+      properties:
+        processGroup:
+          type: string
+        name:
+          type: string
+        config:
+          type: string
+          nullable: true
+      xml:
+        name: FlowNifiDTO
+        namespace: java://it.agilelab.bigdata.wasp.models.editor
+    ExactRawMatchingStrategy:
+      required:
+      - dataframeKeyMatchingExpression
+      type: object
+      properties:
+        dataframeKeyMatchingExpression:
+          type: string
+      xml:
+        name: ExactRawMatchingStrategy
+        namespace: java://it.agilelab.bigdata.wasp.models
+    KeyValueOption:
+      required:
+      - key
+      - value
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      xml:
+        name: KeyValueOption
+        namespace: java://it.agilelab.bigdata.wasp.models
+    GenericProduct:
+      required:
+      - categoryName
+      type: object
+      properties:
+        categoryName:
+          type: string
+        productName:
+          type: string
+          nullable: true
+      xml:
+        name: GenericProduct
+        namespace: java://it.agilelab.bigdata.wasp.datastores
+    PipegraphStatus:
+      type: string
+      enum:
+      - PENDING
+      - PROCESSING
+      - STOPPING
+      - FAILED
+      - STOPPED
+      - UNSCHEDULABLE

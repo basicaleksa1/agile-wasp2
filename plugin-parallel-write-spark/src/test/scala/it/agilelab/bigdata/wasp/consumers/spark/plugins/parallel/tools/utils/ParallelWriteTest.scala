@@ -1,0 +1,85 @@
+package it.agilelab.bigdata.wasp.consumers.spark.plugins.parallel.tools.utils
+
+import com.squareup.okhttp.mockwebserver.{ Dispatcher, MockResponse, RecordedRequest }
+import it.agilelab.bigdata.wasp.consumers.spark.plugins.parallel.ParallelWriteSparkStructuredStreamingWriter
+import it.agilelab.bigdata.wasp.consumers.spark.plugins.parallel.model.ParallelWriteModel
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.execution.streaming.MemoryStream
+import org.apache.spark.sql.streaming.{ DataStreamWriter, StreamingQuery, StreamingQueryException }
+import org.apache.spark.sql.types.StructType
+import org.scalatest.Suite
+
+import java.util.concurrent.{ CountDownLatch, TimeUnit }
+
+trait ParallelWriteTest extends TempDirectoryTest { this: Suite =>
+
+  protected def writeType: String
+
+  def dispatcher(latch: CountDownLatch): Dispatcher =
+    new Dispatcher {
+      override def dispatch(request: RecordedRequest): MockResponse =
+        request.getPath match {
+          case "/writeExecutionPlan" =>
+            EqualAssertion("POST", request.getMethod)
+            latch.countDown()
+
+            val response: MockResponse = new MockResponse().setBody(s"""{
+                                                                       |    "writeUri": "$tempDir/",
+                                                                       |    "format": "$writeType",
+                                                                       |    "writeType": "Cold",
+                                                                       |    "temporaryCredentials": {
+                                                                       |        "r": {
+                                                                       |            "accessKeyID": "ReadaccessKeyID",
+                                                                       |            "secretKey": "ReadsecretKey",
+                                                                       |            "sessionToken": "ReadsessionToken"
+                                                                       |        },
+                                                                       |        "w": {
+                                                                       |            "accessKeyID": "WriteaccessKeyID",
+                                                                       |            "secretKey": "WritesecretKey",
+                                                                       |            "sessionToken": "WritesessionToken"
+                                                                       |        }
+                                                                       |    }
+                                                                       |}""".stripMargin)
+            response
+          case "/data/committed" =>
+            EqualAssertion("GET", request.getMethod)
+            val response: MockResponse = new MockResponse().setBody(s"""{
+                                                                       |    "commitStatus": "Success"
+                                                                       |}""".stripMargin)
+            response
+          case "/data/complete" =>
+            EqualAssertion("POST", request.getMethod)
+            val response: MockResponse = new MockResponse().setBody(s"""{}""".stripMargin)
+            response
+          case "/data/stream" =>
+            EqualAssertion("POST", request.getMethod)
+            val response: MockResponse = new MockResponse().setBody(s"""{}""".stripMargin)
+            response
+          case _ =>
+            new MockResponse().setResponseCode(404)
+        }
+    }
+
+  def createAndExecuteStreamingQuery[A](
+    latch: CountDownLatch,
+    source: MemoryStream[A],
+    genericModel: ParallelWriteModel,
+    schema: StructType,
+    myDf: A*
+  ): Option[StreamingQueryException] = {
+
+    val dsw: DataStreamWriter[Row] =
+      new ParallelWriteSparkStructuredStreamingWriter(genericModel, MockCatalogService(schema: StructType))
+        .write(source.toDF().repartition(10))
+
+    val streamingQuery: StreamingQuery = dsw.start()
+
+    source.addData(myDf: _*)
+    latch.await(1, TimeUnit.SECONDS)
+    source.stop()
+    streamingQuery.processAllAvailable()
+    streamingQuery.stop()
+    streamingQuery.awaitTermination()
+    streamingQuery.exception
+  }
+}
